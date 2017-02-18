@@ -1,8 +1,4 @@
 class DealerPlayer:
-    """
-    After the dealer has dealt to all players, she deals to herself. The dealer must follow specic rules
-    and has no choices: must take cards until score is >= 17. Aces count as 11 unless the score goes
-    over 21, then aces count low and dealer must take cards until her score is 17 or greater."""
 
     def make_bet(self, balance):
         return 0
