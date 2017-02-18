@@ -9,10 +9,6 @@ class PlayerBank:
         self._is_winner = False
 
     def pay_winner(self, amount):
-        """
-        an amount passed in to be added to player's balance. Set is_winner to True.
-        No return
-        """
         self._balance += amount
         self._is_winner = True
 
@@ -27,10 +23,15 @@ class PlayerBank:
 
     def enter_bet(self, amount):
         if amount > self._balance:
-            raise RuntimeError
+            raise RuntimeError("Bet greater than balance")
         else:
             self._balance -= amount
             self._bets_placed += amount
 
     def __str__(self):
-        return NotImplemented  # TODO
+        win_status = ""
+        if self._is_winner:
+            win_status = "winner!"
+        else:
+            win_status = "bust."
+        return "Player assets:\nbet {} balance {} {}".format(self._bets_placed, self._balance, win_status)
