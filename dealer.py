@@ -1,10 +1,11 @@
 from hand import Hand
 import collections
+from dealer_player import DealerPlayer
 
 Player = collections.namedtuple('Player', ['player_obj', 'hand', 'bank'])
 
 
-class Dealer:
+class Dealer(DealerPlayer):
 
     def __init__(self, deck):
         self._deck = deck
