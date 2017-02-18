@@ -1,4 +1,7 @@
-from french_deck import FrenchDeck
+from hand import Hand
+import collections
+
+Player = collections.namedtuple('Player', ['player_obj', 'hand', 'bank'])
 
 class Dealer:
 
@@ -9,14 +12,18 @@ class Dealer:
         self._players = dict()
         self.cards_dealt = NotImplemented
 
-    def add_player(self, player, playerbank):
+    def add_player(self, handle, player, player_bank):
         """
         takes Player and PlayerBank instances as parameters, does not return a value.
         It creates a new Hand instance and stores the three classes in the "players" data structure
         using the player's handle as the key. The method raises a RuntimeError if the player handle is
         already a key in the data structure
         """
-        return NotImplemented
+        if self._players[handle] is not None:
+            raise RuntimeError("player with same name already exists.")
+        else:
+            self._players[handle] = Player(player, Hand(), player_bank)
+        return
 
     def take_bets(self):
         """
