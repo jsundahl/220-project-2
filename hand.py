@@ -45,5 +45,9 @@ class Hand:
     def __len__(self):
         return len(self._cards)
 
+    @staticmethod
+    def _card_string(card):
+        return "Card(rank='{}',suit='{}')".format(card.rank, card.suit)
+
     def __str__(self):
-        return "NotImplemented"
+        return ' '.join(map(self._card_string, self._cards))
