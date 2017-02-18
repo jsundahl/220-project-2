@@ -3,6 +3,7 @@ import collections
 
 Player = collections.namedtuple('Player', ['player_obj', 'hand', 'bank'])
 
+
 class Dealer:
 
     def __init__(self, deck):

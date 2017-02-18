@@ -37,7 +37,8 @@ class Hand:
                     hand_sum += 11
                 else:
                     hand_sum += 1
-        return copy.copy(hand_sum)
+        self._score = hand_sum
+        return
 
     def get_cards(self):
         return copy.copy(self._cards)
