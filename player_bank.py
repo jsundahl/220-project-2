@@ -17,7 +17,7 @@ class PlayerBank:
         self._is_winner = True
 
     def bust(self):
-         self._is_winner = False
+        self._is_winner = False
 
     def get_balance(self):
         return copy.copy(self._balance)
