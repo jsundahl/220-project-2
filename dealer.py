@@ -1,4 +1,5 @@
 from hand import Hand
+import copy
 import collections
 from dealer_player import DealerPlayer
 
@@ -9,10 +10,10 @@ class Dealer(DealerPlayer):
 
     def __init__(self, deck):
         self._deck = deck
-        self._dealer = NotImplemented
-        self._dealer_hand = NotImplemented
+        self._dealer = NotImplemented  # todo: what is this supposed to be?
+        self._dealer_hand = None
         self._players = dict()
-        self.cards_dealt = NotImplemented
+        self.cards_dealt = list()
 
     def add_player(self, handle, player, player_bank):
         """
@@ -25,7 +26,6 @@ class Dealer(DealerPlayer):
             raise RuntimeError("player with same name already exists.")
         else:
             self._players[handle] = Player(player, Hand(), player_bank)
-        return
 
     def take_bets(self):
         """
@@ -34,15 +34,33 @@ class Dealer(DealerPlayer):
         bet into the PlayerBank object by calling the enter_bet method, passing in the player's bet.
         Raise a RuntimeError if a player's bet exceeds the player's balance
         """
-        return NotImplemented
+        for handle, player in self._players:
+            bet = player.player_obj.make_bet(player.player_bank.get_balance())
+            player.bank.enter_bet(bet)
 
     def deal_initial_hand(self):
         """
-        no parameters or return. Deals two cards from the deck to each playerthe cards are stored in the player's Hand instance with add_card. The cards are also stored in
-        the cards_dealt list. The dealer also gets two cards, though the second card is dealt down, so
-        it does not go in the cards_dealt list.
+        no parameters or return. Deals two cards from the deck to each player the cards are stored in the player's Hand
+        instance with add_card. The cards are also stored in the cards_dealt list. The dealer also gets two cards,
+        though the second card is dealt down, so it does not go in the cards_dealt list.
         """
-        return
+        # deal to players
+        for handle, player in self._players:
+            for i in range(0, 2):
+                card = self._deck.remove_card()
+                player.hand.add_card(card)
+                self.cards_dealt.append(card)
+        # deal to yourself
+        card = self._deck.remove_card()
+        self._dealer_hand.append(card)
+        self.cards_dealt.append(card)
+        self._dealer_hand.append(self._deck.remove_card())
+
+    def _apply_want_card(self, player):
+        return player.player_obj(copy.deepcopy(player.hand),
+                                 copy.deepcopy(player.bank),
+                                 list(copy.deepcopy(self._dealer_hand[0])),
+                                 copy.deepcopy(self.cards_dealt))
 
     def deal_player_hands(self):
         """
@@ -54,7 +72,23 @@ class Dealer(DealerPlayer):
         cards or has bust. Remember that only the dealer can update a player's hand with cards and
         score. Remember that all cards dealt should be added to the cards_dealt list
         """
-        return
+        for handle, player in self._players:
+            want_card = self._apply_want_card(player)
+            while want_card:
+                # give player a card and add that to cards_dealt
+                card = self._deck.remove_card()
+                player.hand.add_card(card)
+                self.cards_dealt.append(card)
+                # see if they want to score their aces high or not
+                aces_high = player.player_obj.use_ace_hi(copy.deepcopy(player.hand))
+                # get their score and update it
+                score = player.hand.score_hand(aces_high)
+                player.hand.set_score(score)
+                # see if they've busted or not
+                if score <= 21:
+                    want_card = self._apply_want_card(player)
+                else:
+                    want_card = False
 
     def deal_dealer_hand(self):
         """
