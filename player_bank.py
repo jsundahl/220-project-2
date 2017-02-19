@@ -13,6 +13,7 @@ class PlayerBank:
         self._is_winner = True
 
     def bust(self):
+        self._bets_placed = 0
         self._is_winner = False
 
     def get_balance(self):

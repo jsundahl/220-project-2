@@ -11,7 +11,7 @@ class Dealer(DealerPlayer):
     def __init__(self, deck):
         self._deck = deck
         self._dealer = NotImplemented  # todo: what is this supposed to be?
-        self._dealer_hand = None
+        self._dealer_hand = Hand()
         self._players = dict()
         self.cards_dealt = list()
 
@@ -92,20 +92,44 @@ class Dealer(DealerPlayer):
 
     def deal_dealer_hand(self):
         """
-        no parameters or return. This method implements the rules described
-        in the Dealer Deal section above. The process is similar to the player deal. Be sure to update
-        the dealer's hand and the cards_dealt list.
+        no parameters or return. After the dealer has dealt to all players, she deals to herself. The dealer must follow
+        specic rules and has no choices: must take cards until score is >= 17. Aces count as 11 unless the score goes
+        over 21, then aces count low and dealer must take cards until her score is 17 or greater. The process is similar
+        to the player deal. Be sure to update the dealer's hand and the cards_dealt list.
         """
-        return
+        want_card = self.want_card(self._dealer_hand)
+        while want_card:
+            card = self._deck.remove_card()
+            self._dealer_hand.add_card(card)
+            self.cards_dealt.append(card)
+            aces_high = self.use_ace_hi(self._dealer_hand)
+            score = self._dealer_hand.score_hand(aces_high)
+            self._dealer_hand.set_score(score)
+            if score <= 21:
+                want_card = self.want_card(self._dealer_hand)
+            else:
+                want_card = False
+
 
     def settle_bets(self):
         """
-        no parameters or return. Implements the rules described in the Settle Bets
-        section above. The player's score is gotten from the Hand object and compared to the dealer's
+        no parameters or return. After the dealer's hand is dealt, the scores are compared and bets are settled. If a player is bust
+        they lose their wager. If a player is 21 or below, he wins if his score is greater than the dealer's
+        score. Of course, if the dealer is bust (over 21) the player wins if he is below 21. A tie score with
+        the dealer means the player loses. If a player wins, the dealer pays double her bet.
+        The player's score is gotten from the Hand object and compared to the dealer's
         score. The PlayerBank methods pay_winner and bust are called to update the player's bank
         object.
         """
-        return
+        for handle, player in self._players:
+            dealer_score = self._dealer_hand.get_score()
+            player_score = player.hand.get_score()
+            if player_score > 21:
+                player.bank.bust()
+            elif player_score <= dealer_score and dealer_score <= 21 :
+                player.bank.bust()
+            else:
+                player.bank.pay_winner(player.bank.get_wager()*2)
 
     def __str__(self):
         return NotImplemented
