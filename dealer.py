@@ -131,5 +131,14 @@ class Dealer(DealerPlayer):
             else:
                 player.bank.pay_winner(player.bank.get_wager()*2)
 
+    def _get_player_summary(self, handle, hand, bank):
+        return "Player: {}\nscore: {}\n{}\n{}\n".format(handle, hand.get_score(), str(hand), str(bank))
+
     def __str__(self):
-        return NotImplemented
+        start_str = "$$$$$$  Game Summary  $$$$$$\n"
+        dealer_str = "Dealer:\nscore: {}\n{}\n"
+        players = []
+        for handle, player in self._players:
+            players.append(self._get_player_summary(handle, player.hand, player.bank))
+        players_str = '\n'.join(players)
+        return '\n'.join([start_str, dealer_str, players_str])
