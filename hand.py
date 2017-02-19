@@ -52,3 +52,6 @@ class Hand:
 
     def __str__(self):
         return ' '.join(map(self._card_string, self._cards))
+
+    def __getitem__(self, item):
+        return self._cards[item]
