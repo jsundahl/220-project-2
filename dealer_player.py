@@ -12,3 +12,6 @@ class DealerPlayer:
 
     def want_card(self, hand, bank, dealer_hand, cards_dealt):
         return hand.get_score() < 17
+
+    def __str__(self):
+        return "Dealer Player"

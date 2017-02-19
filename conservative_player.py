@@ -15,3 +15,6 @@ class ConservativePlayer:
 
     def want_card(self, hand, bank, dealer_hand, cards_dealt):
         return hand.get_score() < 15
+
+    def __str__(self):
+        return "Conservative Player"

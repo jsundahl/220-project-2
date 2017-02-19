@@ -12,3 +12,6 @@ class RandomPlayer:
 
     def want_card(self, hand, bank, dealer_hand, cards_dealt):
         return random.randrange(0, 2) == 0
+
+    def __str__(self):
+        return "Random Player"
