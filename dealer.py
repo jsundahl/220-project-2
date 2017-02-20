@@ -57,7 +57,7 @@ class Dealer(DealerPlayer):
         self._dealer_hand.add_card(self._deck.remove_card())
 
     def _apply_want_card(self, player):
-        return player.player_obj(copy.deepcopy(player.hand),
+        return player.player_obj.want_card(copy.deepcopy(player.hand),
                                  copy.deepcopy(player.bank),
                                  list(copy.deepcopy(self._dealer_hand[0])),
                                  copy.deepcopy(self.cards_dealt))
@@ -82,7 +82,8 @@ class Dealer(DealerPlayer):
                 # see if they want to score their aces high or not
                 aces_high = player.player_obj.use_ace_hi(copy.deepcopy(player.hand))
                 # get their score and update it
-                score = player.hand.score_hand(aces_high)
+                player.hand.score_hand(aces_high)
+                score = player.hand.get_score()
                 player.hand.set_score(score)
                 # see if they've busted or not
                 if score <= 21:
@@ -97,16 +98,17 @@ class Dealer(DealerPlayer):
         over 21, then aces count low and dealer must take cards until her score is 17 or greater. The process is similar
         to the player deal. Be sure to update the dealer's hand and the cards_dealt list.
         """
-        want_card = self.want_card(self._dealer_hand)
+        want_card = self.want_card(self._dealer_hand, None, None, None)
         while want_card:
             card = self._deck.remove_card()
             self._dealer_hand.add_card(card)
             self.cards_dealt.append(card)
             aces_high = self.use_ace_hi(self._dealer_hand)
-            score = self._dealer_hand.score_hand(aces_high)
+            self._dealer_hand.score_hand(aces_high)
+            score = self._dealer_hand.get_score()
             self._dealer_hand.set_score(score)
             if score <= 21:
-                want_card = self.want_card(self._dealer_hand)
+                want_card = self.want_card(self._dealer_hand, None, None, None)
             else:
                 want_card = False
 
