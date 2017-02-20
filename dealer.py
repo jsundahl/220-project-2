@@ -22,7 +22,7 @@ class Dealer(DealerPlayer):
         using the player's handle as the key. The method raises a RuntimeError if the player handle is
         already a key in the data structure
         """
-        if self._players[handle] is not None:
+        if handle in self._players:
             raise RuntimeError("player with same name already exists.")
         else:
             self._players[handle] = Player(player, Hand(), player_bank)
@@ -34,8 +34,8 @@ class Dealer(DealerPlayer):
         bet into the PlayerBank object by calling the enter_bet method, passing in the player's bet.
         Raise a RuntimeError if a player's bet exceeds the player's balance
         """
-        for handle, player in self._players:
-            bet = player.player_obj.make_bet(player.player_bank.get_balance())
+        for handle, player in self._players.items():
+            bet = player.player_obj.make_bet(player.bank.get_balance())
             player.bank.enter_bet(bet)
 
     def deal_initial_hand(self):
@@ -45,16 +45,16 @@ class Dealer(DealerPlayer):
         though the second card is dealt down, so it does not go in the cards_dealt list.
         """
         # deal to players
-        for handle, player in self._players:
+        for handle, player in self._players.items():
             for i in range(0, 2):
                 card = self._deck.remove_card()
                 player.hand.add_card(card)
                 self.cards_dealt.append(card)
         # deal to yourself
         card = self._deck.remove_card()
-        self._dealer_hand.append(card)
+        self._dealer_hand.add_card(card)
         self.cards_dealt.append(card)
-        self._dealer_hand.append(self._deck.remove_card())
+        self._dealer_hand.add_card(self._deck.remove_card())
 
     def _apply_want_card(self, player):
         return player.player_obj(copy.deepcopy(player.hand),
@@ -72,7 +72,7 @@ class Dealer(DealerPlayer):
         cards or has bust. Remember that only the dealer can update a player's hand with cards and
         score. Remember that all cards dealt should be added to the cards_dealt list
         """
-        for handle, player in self._players:
+        for handle, player in self._players.items():
             want_card = self._apply_want_card(player)
             while want_card:
                 # give player a card and add that to cards_dealt
@@ -121,7 +121,7 @@ class Dealer(DealerPlayer):
         score. The PlayerBank methods pay_winner and bust are called to update the player's bank
         object.
         """
-        for handle, player in self._players:
+        for handle, player in self._players.items():
             dealer_score = self._dealer_hand.get_score()
             player_score = player.hand.get_score()
             if player_score > 21:
@@ -136,9 +136,9 @@ class Dealer(DealerPlayer):
 
     def __str__(self):
         start_str = "$$$$$$  Game Summary  $$$$$$\n"
-        dealer_str = "Dealer:\nscore: {}\n{}\n"
+        dealer_str = "Dealer:\nscore: {}\n{}\n".format(self._dealer_hand.get_score(), str(self._dealer_hand))
         players = []
-        for handle, player in self._players:
+        for handle, player in self._players.items():
             players.append(self._get_player_summary(handle, player.hand, player.bank))
         players_str = '\n'.join(players)
         return '\n'.join([start_str, dealer_str, players_str])
